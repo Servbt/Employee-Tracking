@@ -12,24 +12,32 @@ const db = mysql.createConnection(
     host: 'localhost',
     user: 'root',
     password: 'root',
-    database: 'books_db'
+    database: 'employee_trackingDB'
   },
-  console.log(`Connected to the books_db database.`)
+  console.log(`Connected to the employee_trackingDB database.`)
 );
 
-//  
-db.query('SELECT COUNT(id) AS total_count FROM favorite_books GROUP BY in_stock', function (err, results) {
-  console.log(results);
-});
+function sqlCommandServer() {
+  connection.query("SELECT * from department", function(error, res) {
+    alldepartments = res.map(dept =>
+       ({ name: dept.name, value: dept.id }));
+  });
 
-db.query('SELECT SUM(quantity) AS total_in_section, MAX(quantity) AS max_quantity, MIN(quantity) AS min_quantity, AVG(quantity) AS avg_quantity FROM favorite_books GROUP BY section', function (err, results) {
-  console.table(results);
-});
+  connection.query("SELECT * from role", function(error, res) {
+    allroles = res.map(role =>
+       ({ name: role.title, value: role.id }));
+  });
 
-app.use((req, res) => {w
-  res.status(404).end();
-});
+  connection.query("SELECT * from employee", function(error, res) {
+    allemployees = res.map(employee => ({
+      name: `${employee.first_name} ${employee.last_name}`,
+      value: employee.id
+    }));
+  });
+}
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+connection.connect(function(err) {
+  if (err) throw err;
+  console.log("\nPlease Use This Program to Track your Employees\n");
+  sqlCommandServer();
 });

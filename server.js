@@ -98,3 +98,52 @@ function startTracker() {
       }
     });
 }
+
+function viewAllEmployees() {
+  console.log("   ");
+  var query =
+    "SELECT employee.id, first_name AS firstname, last_name AS lastname, title AS role, name AS department, salary as salary FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON role.department_id = department.id;";
+  connection.query(query, function(err, res) {
+    if (err) throw err;
+    console.table(res);
+    startEmployeeManager();
+  });
+}
+
+function addEmployee() {
+  updateServer();
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "first_name",
+        message: "What is their first name?"
+      },
+      {
+        type: "input",
+        name: "last_name",
+        message: "What is their last name?"
+      },
+      {
+        name: "role",
+        type: "list",
+        message: "What is their role?",
+        choices: allroles
+      }
+    ])
+    .then(function(answer) {
+      var query = connection.query(
+        "INSERT INTO employee SET ?",
+        {
+          first_name: answer.first_name,
+          last_name: answer.last_name,
+          role_id: answer.role
+        },
+        function(err, res) {
+          if (err) throw err;
+          console.table("\nnew employee added.\n");
+          startEmployeeManager();
+        }
+      );
+    });
+}
